@@ -1,13 +1,13 @@
-from flask import Flask, request
 import requests
+from flask import Flask, request
 
 app = Flask(__name__)
 
-# Get environment variables
-BOT_TOKEN = os.getenv('MYBOT_TOKEN')  # Use the environment variable for your bot token
-CHAT_ID = os.getenv('MYPERSOVOLUMEBOT')  # Use the environment variable for your chat ID
+# Your Telegram Bot Token and Chat ID
+BOT_TOKEN = '7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8'
+CHAT_ID = '5994456404'
 
-# Function to send Telegram alerts
+# Function to send alerts to Telegram
 def send_telegram_alert(message):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
@@ -15,32 +15,29 @@ def send_telegram_alert(message):
         'text': message,
         'parse_mode': 'Markdown'
     }
-    requests.post(url, json=payload)
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()  # Will raise an exception for HTTP errors
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending Telegram message: {e}")
 
-# Simple home route
-@app.route('/', methods=['GET'])
-def home():
-    return '✅ Flask app is running on Render!'
-
-# Webhook route to receive POST requests
+# Webhook endpoint to handle POST requests from TradingView
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    try:
-        data = request.get_json()
-        message = data.get('message', 'No message received')
-        ticker = data.get('ticker', 'No ticker provided')
-        final_message = f"📈 Signal Alert\n\nSymbol: {ticker}\nMessage: {message}"
-        
-        # Log the message for debugging
-        print(f"📩 Incoming webhook: {final_message}")
-        
-        # Send the message to Telegram
-        status_code, response_text = send_telegram_alert(final_message)
-        
-        if status_code == 200:
-            return 'Alert Sent', 200
+    data = request.json
+    if data:
+        # Check if the necessary data is present and format the message
+        if 'ticker' in data and 'message' in data:
+            message = f"📈 *Volume Spike Alert!*\n\nSymbol: `{data['ticker']}`\nMessage: {data['message']}"
         else:
-            return f"Error sending alert: {response_text}", 500
+            message = f"📢 Alert: {data}"  # Fallback for missing fields
 
-    except Exception as e:
-        return f"Error: {str(e)}", 500
+        # Send the message to Telegram
+        send_telegram_alert(message)
+        return 'ok', 200
+    else:
+        return 'Invalid data', 400
+
+# Run the Flask app
+if __name__ == '__main__':
+    app.run(port=5000)
