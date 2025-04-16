@@ -3,9 +3,11 @@ import requests
 
 app = Flask(__name__)
 
-BOT_TOKEN = '7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8'
-CHAT_ID = '5994456404'
+# Your Bot Token and Chat ID (Replace with your actual details)
+BOT_TOKEN = '7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8'  # Replace with your token
+CHAT_ID = '5994456404'  # Replace with your chat ID
 
+# Function to send Telegram alerts
 def send_telegram_alert(message):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
@@ -15,10 +17,12 @@ def send_telegram_alert(message):
     }
     requests.post(url, json=payload)
 
+# Simple home route
 @app.route('/', methods=['GET'])
 def home():
     return '✅ Flask app is running on Render!'
 
+# Webhook route to receive POST requests
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
