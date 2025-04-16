@@ -1,11 +1,12 @@
+import os
 import requests
 from flask import Flask, request
 
 app = Flask(__name__)
 
-# Your Telegram Bot Token and Chat ID
-BOT_TOKEN = '7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8'
-CHAT_ID = '5994456404'
+# Fetch Bot Token and Chat ID from Environment Variables
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+CHAT_ID = os.getenv('CHAT_ID')
 
 # Function to send alerts to Telegram
 def send_telegram_alert(message):
