@@ -36,3 +36,6 @@ def webhook():
         return 'ok', 200
     else:
         return 'Invalid data', 400
+# Run the Flask app on the correct host and port for Render
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=80)
