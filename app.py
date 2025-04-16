@@ -1,22 +1,30 @@
-from flask import Flask, request
 import requests
-import os
+from flask import Flask, request
 
 app = Flask(__name__)
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+# Replace with your Telegram bot token and your chat ID
+BOT_TOKEN = '7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8'
+CHAT_ID = '5994456404'
+
+def send_telegram_alert(message):
+    url = f"https://api.telegram.org/bot7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8/sendMessage"
+    payload = {
+        'chat_id': CHAT_ID,
+        'text': message,
+        'parse_mode': 'Markdown'
+    }
+    requests.post(url, json=payload)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    data = request.get_json()
-    message = data.get('message', 'No message received')
-    
-    send_text = f"🚨 TradingView Alert:\n{message}"
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": send_text
-    }
-    requests.post(url, data=payload)
-    return "OK"
+    data = request.json
+    if 'ticker' in data and 'message' in data:
+        message = f"📈 *Volume Spike Alert!*\n\nSymbol: `{data['ticker']}`\nMessage: {data['message']}"
+    else:
+        message = f"📢 Alert: {data}"
+    send_telegram_alert(message)
+    return 'ok', 200
+
+if __name__ == '__main__':
+    app.run(port=5000)
