@@ -3,9 +3,9 @@ import requests
 
 app = Flask(__name__)
 
-# Your Bot Token and Chat ID (Replace with your actual details)
-BOT_TOKEN = '7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8'  # Replace with your token
-CHAT_ID = '5994456404'  # Replace with your chat ID
+# Get environment variables
+BOT_TOKEN = os.getenv('MYBOT_TOKEN')  # Use the environment variable for your bot token
+CHAT_ID = os.getenv('MYPERSOVOLUMEBOT')  # Use the environment variable for your chat ID
 
 # Function to send Telegram alerts
 def send_telegram_alert(message):
