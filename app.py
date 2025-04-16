@@ -18,7 +18,7 @@ def send_telegram_alert(message):
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    data = request.json
+    data = request.get_json()
     if 'ticker' in data and 'message' in data:
         message = f"📈 *Volume Spike Alert!*\n\nSymbol: `{data['ticker']}`\nMessage: {data['message']}"
     else:
