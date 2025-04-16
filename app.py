@@ -1,12 +1,11 @@
-import os
 import requests
 from flask import Flask, request
 
 app = Flask(__name__)
 
-# Fetch Bot Token and Chat ID from Environment Variables
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-CHAT_ID = os.getenv('CHAT_ID')
+# Your Telegram Bot Token and Chat ID
+BOT_TOKEN = '7662346368:AAHlygCgzzE9Wsdm0GcG3_DShx7O5tTqBo8'
+CHAT_ID = '5994456404'
 
 # Function to send alerts to Telegram
 def send_telegram_alert(message):
@@ -27,15 +26,23 @@ def send_telegram_alert(message):
 def webhook():
     data = request.json
     if data:
+        # Check if the necessary data is present and format the message
         if 'ticker' in data and 'message' in data:
             message = f"📈 *Volume Spike Alert!*\n\nSymbol: `{data['ticker']}`\nMessage: {data['message']}"
         else:
             message = f"📢 Alert: {data}"  # Fallback for missing fields
 
+        # Send the message to Telegram
         send_telegram_alert(message)
         return 'ok', 200
     else:
         return 'Invalid data', 400
-# Run the Flask app on the correct host and port for Render
+
+# Root endpoint to check if the app is working
+@app.route('/')
+def home():
+    return "Flask app is running. Webhook is set up at /webhook."
+
+# Run the Flask app
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.run(port=5000)
