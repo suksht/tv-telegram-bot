@@ -27,18 +27,12 @@ def send_telegram_alert(message):
 def webhook():
     data = request.json
     if data:
-        # Check if the necessary data is present and format the message
         if 'ticker' in data and 'message' in data:
             message = f"📈 *Volume Spike Alert!*\n\nSymbol: `{data['ticker']}`\nMessage: {data['message']}"
         else:
             message = f"📢 Alert: {data}"  # Fallback for missing fields
 
-        # Send the message to Telegram
         send_telegram_alert(message)
         return 'ok', 200
     else:
         return 'Invalid data', 400
-
-# Run the Flask app
-if __name__ == '__main__':
-    app.run(port=5000)
